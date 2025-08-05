@@ -1,0 +1,72 @@
+---
+title: "R Notebook"
+output: html_notebook
+---
+
+```{r}
+#--------------------This notebook quantifies undercounting error---------------------------------#
+#update.packages("ggplot2")
+#update.packages("qqplotr")
+library(qqplotr)
+library(ggplot2)
+
+untagged_percent_error <- c( 5.94059406,  4.90693739,  3.75670841,  5.31914894,  0.56657224,  3.27169275,
+  1.04166667,  2.06422018,  9.18499353,  1.953125,    5.1497006,   7.52823087,
+  3.69843528,  3.92156863, 10.61946903,  1.79480311,  4.24403183,  2.84552846,
+  1.24777184,  3.04154303,  1.68674699,  3.82732532,  0.70546737,  5.59440559,
+  7.49506903,  0.78534031,  1.86567164,  3.27044025)
+
+tagged_percent_error <- c( 4.47761194,  4.76190476,  5.26315789,  3.03030303,  0.84745763,  1.34228188,
+  0.53475936,  0.  ,        0.99009901,  0.   ,      11.70212766,  1.35135135,
+  5.49450549,  3.38983051, 10. ,         2.3255814 ,  1.66666667 , 7.35294118,
+  0. ,         2.5862069,   9.09090909,  1.07526882,  0. ,         6.38297872,
+  0. ,         3.22580645,  7.40740741,  1.2195122)
+
+  data <- data.frame(tagged = tagged_percent_error, untagged = untagged_percent_error)
+```
+
+```{R}
+#-------------------------Untagged mtDNA undercounting error exponential qq plot-----------------#
+di <- "exp" # exponential distribution
+dp <- list(rate = 1/mean(untagged_percent_error)) # exponential rate parameter
+gg <- ggplot(data = data, mapping = aes(sample = untagged)) +
+    stat_qq_band(distribution = di, dparams = dp) +
+    stat_qq_line(distribution = di, dparams = dp) +
+    stat_qq_point(distribution = di, dparams = dp) +
+    labs(x = "Theoretical Quantiles", y = "Sample Quantiles") +
+    theme(text = element_text(size = 16))
+gg
+```
+
+```{R}
+#-------------------------Tagged mtDNA undercounting error exponential qq plot-----------------#
+di <- "exp" # exponential distribution
+dp <- list(rate = 1/mean(tagged_percent_error)) # exponential rate parameter
+
+gg <- ggplot(data = data, mapping = aes(sample = tagged)) +
+    stat_qq_band(distribution = di, dparams = dp) +
+    stat_qq_line(distribution = di, dparams = dp) +
+    stat_qq_point(distribution = di, dparams = dp) +
+    labs(x = "Theoretical Quantiles", y = "Sample Quantiles") +
+    theme(text = element_text(size = 16))
+gg
+```
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+

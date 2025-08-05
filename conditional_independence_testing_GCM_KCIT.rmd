@@ -1,0 +1,302 @@
+```{R}
+
+#-----------------This file computes GCM and KCIT conditional independence tests for all cells--------------#
+
+
+# install.packages("CondIndTests")
+# install.packages("GeneralisedCovarianceMeasure")
+# install.packages("ppcor")
+# install.packages("readxl")
+# install.packages("ggplot2")
+# install.packages("boot")
+# install.packages("rstudioapi")
+
+library("readxl")
+library("CondIndTests")
+library("GeneralisedCovarianceMeasure")
+library("ppcor")
+library("ggplot2")
+library("boot")
+library("rstudioapi")
+```
+
+
+```{R}
+#Extracting fibroblast pulse experiment data
+wd <- dirname(rstudioapi::getSourceEditorContext()$path)
+
+excel_file_1hr <- paste(wd, "/data_preprocessing/pulse_data/assay1/06022024 No FBS Fibroblasts 1 hr.xlsx", sep="")
+excel_file_3hr <- paste(wd, "/data_preprocessing/pulse_data/assay1/06022024 No FBS Fibroblasts 3 hr.xlsx", sep="")
+excel_file_7hr <- paste(wd, "/data_preprocessing/pulse_data/assay1/06022024 No FBS Fibroblasts 7 hr.xlsx", sep="")
+excel_file_24hr <- paste(wd, "/data_preprocessing/pulse_data/assay1/06022024 No FBS Fibroblasts 24 hr.xlsx", sep="")
+
+mito_1hr <- read_excel(excel_file_1hr, range  = 'E5:K38')
+mito_3hr <- read_excel(excel_file_3hr, range  = 'E5:K39')
+mito_7hr <- read_excel(excel_file_7hr, range  = 'E5:K28')
+mito_24hr <- read_excel(excel_file_24hr, range  = 'E5:K31')
+dna_1hr <- read_excel(excel_file_1hr, range  = 'U5:AA38')
+dna_3hr <- read_excel(excel_file_3hr, range  = 'U5:AA39')
+dna_7hr <- read_excel(excel_file_7hr, range  = 'U5:AA28')
+dna_24hr <- read_excel(excel_file_24hr, range  = 'U5:AA31')
+cell_volume_1hr <- read_excel(excel_file_1hr, range  = 'C5:C38')
+cell_volume_3hr <- read_excel(excel_file_3hr, range  = 'C5:C39')
+cell_volume_7hr <- read_excel(excel_file_7hr, range  = 'C5:C28')
+cell_volume_24hr <- read_excel(excel_file_24hr, range  = 'C5:C31')
+
+excel_file_1hr2 <- paste(wd, "/data_preprocessing/pulse_data/assay2/25012024 No FBS Fibroblasts 1 hr.xlsx", sep="")
+excel_file_3hr2 <- paste(wd, "/data_preprocessing/pulse_data/assay2/25012024 No FBS Fibroblasts 3 hr.xlsx", sep="")
+excel_file_7hr2 <- paste(wd, "/data_preprocessing/pulse_data/assay2/25012024 No FBS Fibroblasts 7 hr.xlsx", sep="")
+excel_file_24hr2 <- paste(wd, "/data_preprocessing/pulse_data/assay2/25012024 No FBS Fibroblasts 24 hr.xlsx", sep="")
+
+mito_1hr2 <- read_excel(excel_file_1hr2, range  = 'E5:K28')
+mito_3hr2 <- read_excel(excel_file_3hr2, range  = 'E5:K37')
+mito_7hr2 <- read_excel(excel_file_7hr2, range  = 'E5:K36')
+mito_24hr2 <- read_excel(excel_file_24hr2, range  = 'E5:K50')
+dna_1hr2 <- read_excel(excel_file_1hr2, range  = 'U5:AA28')
+dna_3hr2 <- read_excel(excel_file_3hr2, range  = 'U5:AA37')
+dna_7hr2 <- read_excel(excel_file_7hr2, range  = 'U5:AA36')
+dna_24hr2 <- read_excel(excel_file_24hr2, range  = 'U5:AA50')
+cell_volume_1hr2 <- read_excel(excel_file_1hr2, range  = 'C5:C28')
+cell_volume_3hr2 <- read_excel(excel_file_3hr2, range  = 'C5:C37')
+cell_volume_7hr2 <- read_excel(excel_file_7hr2, range  = 'C5:C36')
+cell_volume_24hr2 <- read_excel(excel_file_24hr2, range  = 'C5:C50')
+
+excel_file_1hr3 <- paste(wd, "/data_preprocessing/pulse_data/assay3/01022024 No FBS Fibroblasts 1 hr.xlsx", sep="")
+excel_file_3hr3 <- paste(wd, "/data_preprocessing/pulse_data/assay3/01022024 No FBS Fibroblasts 3 hr.xlsx", sep="")
+excel_file_7hr3 <- paste(wd, "/data_preprocessing/pulse_data/assay3/01022024 No FBS Fibroblasts 7 hr.xlsx", sep="")
+excel_file_24hr3 <- paste(wd, "/data_preprocessing/pulse_data/assay3/01022024 No FBS Fibroblasts 24 hr.xlsx", sep="")
+
+mito_1hr3 <- read_excel(excel_file_1hr3, range  = 'E5:K33')
+mito_3hr3 <- read_excel(excel_file_3hr3, range  = 'E5:K38')
+mito_7hr3 <- read_excel(excel_file_7hr3, range  = 'E5:K38')
+mito_24hr3 <- read_excel(excel_file_24hr3, range  = 'E5:K46')
+
+dna_1hr3 <- read_excel(excel_file_1hr3, range  = 'U5:AA33')
+dna_3hr3 <- read_excel(excel_file_3hr3, range  = 'U5:AA38')
+dna_7hr3 <- read_excel(excel_file_7hr3, range  = 'U5:AA38')
+dna_24hr3 <- read_excel(excel_file_24hr3, range  = 'U5:AA46')
+
+cell_volume_1hr3 <- read_excel(excel_file_1hr3, range  = 'C5:C33')
+cell_volume_3hr3 <- read_excel(excel_file_3hr3, range  = 'C5:C38')
+cell_volume_7hr3 <- read_excel(excel_file_7hr3, range  = 'C5:C38')
+cell_volume_24hr3 <- read_excel(excel_file_24hr3, range  = 'C5:C46')
+
+full_mtnetwork_vol <-c(mito_1hr$`total volume`, mito_3hr$`total volume`, mito_7hr$`total volume`, mito_24hr$`total volume`,
+                       mito_1hr2$`total volume`, mito_3hr2$`total volume`, mito_7hr2$`total volume`, mito_24hr2$`total volume`,
+                       mito_1hr3$`total volume`, mito_3hr3$`total volume`, mito_7hr3$`total volume`, mito_24hr3$`total volume`)
+
+full_dna_count <- c(dna_1hr$count, dna_3hr$count, dna_7hr$count, dna_24hr$count, dna_1hr2$count, dna_3hr2$count, dna_7hr2$count,
+                    dna_24hr2$count, dna_1hr3$count, dna_3hr3$count, dna_7hr3$count, dna_24hr3$count)
+
+full_cell_vol <- c(cell_volume_1hr$`Cell volume`, cell_volume_3hr$`Cell volume`, cell_volume_7hr$`Cell volume`, 
+                    cell_volume_24hr$`Cell volume`, cell_volume_1hr2$`Cell volume`, cell_volume_3hr2$`Cell volume`, 
+                    cell_volume_7hr2$`Cell volume`, cell_volume_24hr2$`Cell volume`, cell_volume_1hr3$`Cell volume`, 
+                    cell_volume_3hr3$`Cell volume`, cell_volume_7hr3$`Cell volume`, cell_volume_24hr3$`Cell volume`)
+
+set.seed(0)
+v = 1:length(full_cell_vol)
+v = sample(v)
+
+full_cell_vol <- full_cell_vol[v]
+full_dna_count <- full_dna_count[v]
+full_mtnetwork_vol <- full_mtnetwork_vol[v]
+```
+
+```{R}
+#Extracting data for other cell types
+
+excel_file <- paste(wd, "/data_preprocessing/other_cells/HeLa Summary N=3.xlsx", sep="")
+cell_vol = read_excel(excel_file, range = 'D7:D90')
+hela_cellvol = cell_vol$`Cell Volume`
+hela_cellvol = hela_cellvol[!is.na(hela_cellvol)]
+mito_length = read_excel(excel_file, range = 'P7:P90')
+hela_mtvol = mito_length$`total volume`
+hela_mtvol = hela_mtvol[!is.na(hela_mtvol)]
+dna_num = read_excel(excel_file, range = 'R7:R90')
+hela_dna = dna_num$`count`
+hela_dna = hela_dna[!is.na(hela_dna)]
+
+v = 1:length(hela_cellvol)
+v = sample(v)
+hela_cellvol <- hela_cellvol[v]
+hela_mtvol <- hela_mtvol[v]
+hela_dna <- hela_dna[v]
+
+excel_file <- paste(wd, "/data_preprocessing/other_cells/COS7 Summary N=3.xlsx", sep="")
+cell_vol = read_excel(excel_file, range = 'D7:D61')
+cos7_cellvol = cell_vol$`Cell Volume`
+cos7_cellvol = cos7_cellvol[!is.na(cos7_cellvol)]
+mito_length = read_excel(excel_file, range = 'P7:P61')
+cos7_mtvol = mito_length$`total volume`
+cos7_mtvol = cos7_mtvol[!is.na(cos7_mtvol)]
+dna_num = read_excel(excel_file, range = 'X7:X61')
+cos7_dna = dna_num$`count`
+cos7_dna = cos7_dna[!is.na(cos7_dna)]
+
+v = 1:length(cos7_cellvol)
+v = sample(v)
+cos7_cellvol <- cos7_cellvol[v]
+cos7_mtvol <- cos7_mtvol[v]
+cos7_dna <- cos7_dna[v]
+
+excel_file <- paste(wd, "/data_preprocessing/other_cells/summary hepatocytes n of 8.xlsx", sep="")
+cell_vol = read_excel(excel_file, range = 'F4:F39')
+hep_cellvol = cell_vol$`cellular volume (microns cubed)`
+hep_cellvol = hep_cellvol[!is.na(hep_cellvol)]
+mito_length = read_excel(excel_file, range = 'D4:D39')
+hep_mtvol = mito_length$`mitochondrial volume (microns cubed)`
+hep_mtvol = hep_mtvol[!is.na(hep_mtvol)]
+dna_num = read_excel(excel_file, range = 'C4:C39')
+hep_dna = dna_num$`nucleoid number`
+hep_dna = hep_dna[!is.na(hep_dna)]
+
+v = 1:length(hep_cellvol)
+v = sample(v)
+hep_cellvol <- hep_cellvol[v]
+hep_mtvol <- hep_mtvol[v]
+hep_dna <- hep_dna[v]
+```
+
+```{R}
+#Defining functions to compute the statistical tests and normalise the data beforehand
+normalize <- function(mat){
+
+  if (is.null(nrow(mat))){mat = matrix(mat);}
+
+  mat = apply(mat, 2, function(x) if (sd(x)>0){(x - mean(x)) / sd(x)} else{x-mean(x);})
+}
+
+GCM  <- function(X,Y,Z){
+    
+    X=normalize(X);
+    Y=normalize(Y);
+    Z=normalize(Z);
+
+    #median heuristic (Suppementary Information Section 7.2.1)
+    width = median(as.vector(dist(cbind(X,Y))));
+    gcm.test(X, Y, Z, regr.method = "kernel.ridge", regr.pars = list("sigma" = width))
+    
+}
+
+KCIT <- function(X, Y, Z, GP = FALSE){
+  
+    X=normalize(X);
+    Y=normalize(Y);
+    Z=normalize(Z);
+  
+    #median heuristic (Suppementary Information Section 7.2.1)
+    width = median(as.vector(dist(cbind(X,Y))));
+
+    KCI(X,Y,Z, gammaApprox = FALSE, width = width, GP = GP)
+}
+
+```
+
+```{R}
+#-----------------------------------KCIT for fibroblast data-------------------------------------#
+
+#V conditionally independent to N given l
+KCIT(full_cell_vol, full_dna_count, full_mtnetwork_vol)
+
+#N conditionally independent to l given V
+KCIT(full_dna_count, full_mtnetwork_vol, full_cell_vol)
+
+#l conditionally independent to V given N
+KCIT(full_mtnetwork_vol, full_cell_vol, full_dna_count)
+```
+
+```{R}
+#-----------------------------------GCM for fibroblast data-------------------------------------#
+
+#V conditionally independent to N given l
+GCM(full_cell_vol, full_dna_count, full_mtnetwork_vol)
+
+#N conditionally independent to l given V
+GCM(full_dna_count, full_mtnetwork_vol, full_cell_vol)
+
+#l conditionally independent to V given N
+GCM(full_mtnetwork_vol, full_cell_vol, full_dna_count)
+```
+
+```{R}
+#-----------------------------------KCIT for HeLa cells-------------------------------------#
+
+#V conditionally independent to N given l
+KCIT(hela_cellvol, hela_dna, hela_mtvol)
+
+#N conditionally independent to l given V
+KCIT(hela_dna, hela_mtvol, hela_cellvol)
+
+#l conditionally independent to V given N
+KCIT(hela_mtvol, hela_cellvol, hela_dna)
+
+```
+
+```{R}
+#-----------------------------------GCM for HeLa cells-------------------------------------#
+
+
+#V conditionally independent to N given l
+GCM(hela_cellvol, hela_dna, hela_mtvol)
+
+#N conditionally independent to l given V
+GCM(hela_dna, hela_mtvol, hela_cellvol)
+
+#l conditionally independent to V given N
+GCM(hela_mtvol, hela_cellvol, hela_dna)
+
+```
+
+```{R}
+#-----------------------------------KCIT for COS-7 cells-------------------------------------#
+
+#V conditionally independent to N given l
+KCIT(cos7_cellvol, cos7_dna, cos7_mtvol)
+
+#N conditionally independent to l given V
+KCIT(cos7_dna, cos7_mtvol, cos7_cellvol)
+
+#l conditionally independent to V given N
+KCIT(cos7_mtvol, cos7_cellvol, cos7_dna)
+```
+
+```{R}
+#-----------------------------------GCM for COS-7 cells-------------------------------------#
+
+#V conditionally independent to N given l
+GCM(cos7_cellvol, cos7_dna, cos7_mtvol)
+
+#N conditionally independent to l given V
+GCM(cos7_dna, cos7_mtvol, cos7_cellvol)
+
+#l conditionally independent to V given N
+GCM(cos7_mtvol, cos7_cellvol, cos7_dna)
+
+```
+
+```{R}
+#-----------------------------------KCIT for primary murine hepatocytes---------------------#
+
+#V conditionally independent to N given l
+KCIT(hep_cellvol, hep_dna, hep_mtvol)
+
+#N conditionally independent to l given V
+KCIT(hep_dna, hep_mtvol, hep_cellvol)
+
+#l conditionally independent to V given N
+KCIT(hep_mtvol, hep_cellvol, hep_dna)
+```
+
+```{R}
+#-----------------------------------GCM for primary murine hepatocytes---------------------#
+
+#V conditionally independent to N given l
+GCM(hep_cellvol, hep_dna, hep_mtvol)
+
+#N conditionally independent to l given V
+GCM(hep_dna, hep_mtvol, hep_cellvol)
+
+#l conditionally independent to V given N
+GCM(hep_mtvol, hep_cellvol, hep_dna)
+
+```
