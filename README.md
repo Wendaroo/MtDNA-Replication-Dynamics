@@ -39,3 +39,6 @@ Neural Granger causality functions are found in data_preprocessing/neural_grange
 # Miscellaneous Analyses
 
 Gaussian mixture modelling of mtEdU intensities, along with BIC scores, is found in guassian_mixture_figures.ipynb. Model fits to ethidium bromide exposed cells are found in degradation_data_modelling.ipynb. Model fits to primary mouse macrophage data are found in mouse_modelling.ipynb. Data for ABC and all other analysis are extracted and preprocessed in data_preprocessing/data_preprocessing.py. All data used for fitting, along with simulated ABC or posterior predictive data, can be found within the subfolders of data_preprocessing
+
+
+If any bugs are found, please contact endrimjeku@gmail.com.

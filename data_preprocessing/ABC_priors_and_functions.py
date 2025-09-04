@@ -5,7 +5,7 @@ from .data_preprocessing import (training_mito_lengths, training_dna_numbers, tr
                                  pulse_data_summary_statistics_with_hetero, pulse_data_summary_statistics_with_hetero_variance,
                                  pulse_data_summary_statistics_with_edu_hetero, pulse_data_summary_statistics_with_edu_hetero_variance
 )
-
+import os
 from numba import jit, prange
 import scipy.stats as sc
 from .stochastic_systems_models import (pulse_summary_statistics, logarithmic_three_population_pulse, logarithmic_two_population_pulse,

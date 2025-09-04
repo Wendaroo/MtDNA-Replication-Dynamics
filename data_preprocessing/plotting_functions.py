@@ -107,7 +107,7 @@ def one_population_posteriors(all_params, accepted_params, mode = "pulse", dimen
             plt.tight_layout()
             #plt.savefig("one_pop_pulse_betas_2d", dpi=300)
 
-def two_population_posteriors(all_params, accepted_params, mode = "pulse", dimensions = 1, p=False, prel = False):
+def two_population_posteriors(all_params, accepted_params, previous_params = 0, mode = "pulse", dimensions = 1, p=False, prel = False):
     #beta0, beta1, diffusion_prob_pulse, mu_d_pulse, true_birth_param, c
     if dimensions == 1:
         if mode == "pulse":
@@ -115,31 +115,31 @@ def two_population_posteriors(all_params, accepted_params, mode = "pulse", dimen
                 s=1
             else:
                 s=0
-            fig, ax = plt.subplots(2,5-s, figsize=(18,18/4))
+            fig, ax = plt.subplots(2,4-s, figsize=(18,5))
             if not prel:
                 ax[0,0].hist(np.transpose(all_params)[2], density = True, label = "prior", bins=50)
                 ax[0,0].hist(np.transpose(accepted_params)[2], density = True, label = "posterior", bins=50, color = "orange")
                 ax[0,0].set_title("$p$")
-                ax[0,0].set_ylabel("Density")
+            ax[0,0].set_ylabel("Density")
 
             ax[0,1-s].hist(np.log10(np.transpose(all_params)[3]), density = True, label = "prior", bins=50)
             ax[0,1-s].hist(np.log10(np.transpose(accepted_params)[3]), density = True, label = "posterior", bins=50, color = "orange")
             ax[0,1-s].set_title("$log_{10}(\mu_d)$")
 
-            ax[0,2-s].hist(np.log10(np.transpose(all_params)[3]*np.transpose(all_params)[2]), density = True, label = "prior", bins=50)
-            ax[0,2-s].hist(np.log10(np.transpose(accepted_params)[3]*np.transpose(accepted_params)[2]), density = True, label = "posterior", bins=50, color = "orange")
-            if prel:
-                ax[0,2-s].set_title("$log_{10}(\mu_b)$ ($\mu_b = \mu_d$)")
-            else:
-                ax[0,2-s].set_title("$log_{10}(\mu_b)$ ($\mu_b = p\mu_d$)")
+            # ax[0,2-s].hist(np.log10(np.transpose(all_params)[3]*np.transpose(all_params)[2]), density = True, label = "prior", bins=50)
+            # ax[0,2-s].hist(np.log10(np.transpose(accepted_params)[3]*np.transpose(accepted_params)[2]), density = True, label = "posterior", bins=50, color = "orange")
+            # if prel:
+            #     ax[0,2-s].set_title("$log_{10}(\mu_b)$ ($\mu_b = \mu_d$)")
+            # else:
+            #     ax[0,2-s].set_title("$log_{10}(\mu_b)$ ($\mu_b = p\mu_d$)")
 
-            ax[0,3-s].hist(1/(np.transpose(all_params)[4]), density = True, label = "prior", bins=50)
-            ax[0,3-s].hist(1/(np.transpose(accepted_params)[4]), density = True, label = "posterior", bins=50, color = "orange")
-            ax[0,3-s].set_title("$1/\mu_r$")
+            ax[0,2-s].hist(1/(np.transpose(all_params)[4]), density = True, label = "prior", bins=50)
+            ax[0,2-s].hist(1/(np.transpose(accepted_params)[4]), density = True, label = "posterior", bins=50, color = "orange")
+            ax[0,2-s].set_title("$1/\mu_r$")
 
-            ax[0,4-s].hist(np.log10(np.transpose(all_params)[5]), density = True, label = "Prior", bins=50)
-            ax[0,4-s].hist(np.log10(np.transpose(accepted_params)[5]), density = True, label = "Posterior", bins=50, color = "orange")
-            ax[0,4-s].set_title("$log_{10}(c)$")
+            ax[0,3-s].hist(np.log10(np.transpose(all_params)[5]), density = True, label = "Prior", bins=50)
+            ax[0,3-s].hist(np.log10(np.transpose(accepted_params)[5]), density = True, label = "Posterior", bins=50, color = "orange")
+            ax[0,3-s].set_title("$log_{10}(c)$")
 
             ax[1,0].hist(np.transpose(all_params)[0], density = True, label = "prior", bins=50)
             ax[1,0].hist(np.transpose(accepted_params)[0], density = True, label = "posterior", bins=50, color = "orange")
@@ -154,46 +154,61 @@ def two_population_posteriors(all_params, accepted_params, mode = "pulse", dimen
             ax[1,2].hist(np.array([]), label = "Posterior", color = "orange")
             ax[1,2].legend(loc= "center")
             for j in range(2):
-                for i in range(5-s):
+                for i in range(4-s):
                     ax[j,i].set_yticks([],[])
 
-            for j in range(3-s):
+            for j in range(2-s):
                 ax[1,j+2].set_xticks([],[])
                 ax[1,j+2].spines['top'].set_visible(False)
                 ax[1,j+2].spines['right'].set_visible(False)
                 ax[1,j+2].spines['bottom'].set_visible(False)
                 ax[1,j+2].spines['left'].set_visible(False)
 
+            plt.tight_layout()
+
 
         if mode == "chase":
             #beta0, beta1, sig, diffusion_prob_pulse, mu_d_pulse, true_birth_param, mu_b_chase, diffusion_prob_chase, mu_d_chase, c
-            
-            fig, ax = plt.subplots(2,5, figsize=(18,18/4))
+            fig, ax = plt.subplots(2,5, figsize=(18,6))
 
+            ax[0,0].hist(np.transpose(previous_params)[2], density = True, color = "darkviolet")
             ax[0,0].hist(np.transpose(all_params)[3], density = True, label = "prior", bins=50)
             ax[0,0].hist(np.transpose(accepted_params)[3], density = True, label = "posterior", bins=50, color = "orange")
             ax[0,0].set_title("$p$")
             ax[0,0].set_ylabel("Density")
 
-            #ax[0,1].hist(np.log10(np.transpose(all_params)[3]), density = True, label = "prior", bins=50, color = "green")
+            ax[0,1].hist(np.log10(np.transpose(previous_params)[3]), density = True, color = "darkviolet")
             ax[0,1].hist(np.log10(np.transpose(all_params)[4]), density = True, label = "prior", bins=50)
             ax[0,1].hist(np.log10(np.transpose(accepted_params)[4]), density = True, label = "posterior", bins=50, color = "orange")
             ax[0,1].set_title("$log_{10}(\mu_d)$")
 
-            #ax[0,2].hist(np.log10(np.transpose(all_params)[4]), density = True, label = "prior", bins=50, color = "green")
-            ax[0,2].hist(np.log10(np.transpose(all_params)[4]*np.transpose(all_params)[3]), density = True, label = "prior", bins=50)
-            ax[0,2].hist(np.log10(np.transpose(accepted_params)[4]*np.transpose(accepted_params)[3]), density = True, label = "posterior", bins=50, color = "orange")
-            ax[0,2].set_title("$log_{10}(\mu_b)$ ($\mu_b = p\mu_d$)")
+            # #ax[0,2].hist(np.log10(np.transpose(all_params)[4]), density = True, label = "prior", bins=50, color = "green")
+            # ax[0,2].hist(np.log10(np.transpose(all_params)[4]*np.transpose(all_params)[3]), density = True, label = "prior", bins=50)
+            # ax[0,2].hist(np.log10(np.transpose(accepted_params)[4]*np.transpose(accepted_params)[3]), density = True, label = "posterior", bins=50, color = "orange")
+            # ax[0,2].set_title("$log_{10}(\mu_b)$ ($\mu_b = p\mu_d$)")
 
             #ax[0,4].hist(1/(np.transpose(all_params)[5]), density = True, label = "Pulse Prior", bins=50, color = "green")
-            ax[0,3].hist(1/(np.transpose(all_params)[5]), density = True, label = "Pulse Posterior/Chase Prior", bins=50)
-            ax[0,3].hist(1/(np.transpose(accepted_params)[5]), density = True, label = "Chase Posterior", bins=50, color = "orange")
-            ax[0,3].set_title("$1/\mu_r$")
+            ax[0,2].hist(1/(np.transpose(previous_params)[4]), density = True, color = "darkviolet")
+            ax[0,2].hist(1/(np.transpose(all_params)[5]), density = True, label = "Pulse Posterior/Chase Prior", bins=50)
+            ax[0,2].hist(1/(np.transpose(accepted_params)[5]), density = True, label = "Chase Posterior", bins=50, color = "orange")
+            ax[0,2].set_title("$1/\mu_r$")
 
             #ax[0,5].hist(np.log10(np.transpose(all_params)[6]), density = True, label = "Pulse Fitting Prior", bins=50, color = "green")
-            ax[0,4].hist(np.log10(np.transpose(all_params)[9]), density = True, label = "Prior", bins=50)
-            ax[0,4].hist(np.log10(np.transpose(accepted_params)[9]), density = True, label = "Posterior", bins=50, color = "orange")
-            ax[0,4].set_title("$log_{10}(c)$")
+            ax[0,3].hist(np.log10(np.transpose(previous_params)[5]), density = True, color = "darkviolet")
+            ax[0,3].hist(np.log10(np.transpose(all_params)[9]), density = True, label = "Prior", bins=50)
+            ax[0,3].hist(np.log10(np.transpose(accepted_params)[9]), density = True, label = "Posterior", bins=50, color = "orange")
+            ax[0,3].set_title("$log_{10}(c)$")
+
+            ax[0,4].set_xticks([],[])
+            ax[0,4].set_yticks([],[])
+            ax[0,4].spines['top'].set_visible(False)
+            ax[0,4].spines['right'].set_visible(False)
+            ax[0,4].spines['bottom'].set_visible(False)
+            ax[0,4].spines['left'].set_visible(False)
+            ax[0,4].hist(np.array([]), label = "Prior")
+            ax[0,4].hist(np.array([]), label = "Posterior", color = "orange")
+            ax[0,4].hist(np.array([]), label = "Original pulse data prior", color = "darkviolet")
+            ax[0,4].legend(loc="center")
 
             ax[1,2].hist(np.log10(np.transpose(all_params)[8]), density = True, label = "prior", bins=50)
             ax[1,2].hist(np.log10(np.transpose(accepted_params)[8]), density = True, label = "posterior", bins=50, color = "orange")
@@ -231,9 +246,6 @@ def two_population_posteriors(all_params, accepted_params, mode = "pulse", dimen
                 ax[1,4].spines['right'].set_visible(False)
                 ax[1,4].spines['bottom'].set_visible(False)
                 ax[1,4].spines['left'].set_visible(False)
-                ax[1,4].hist(np.array([]), label = "Prior")
-                ax[1,4].hist(np.array([]), label = "Posterior", color = "orange")
-                ax[1,4].legend(loc="center")
 
             for j in range(2):
                 for i in range(5):
@@ -245,7 +257,7 @@ def two_population_posteriors(all_params, accepted_params, mode = "pulse", dimen
         if mode == "pulse":
             if prel:
                 s=1
-                figs = (18,12)
+                figs = (9,7)
             else:
                 s=0
                 figs = (18,12)
@@ -453,16 +465,16 @@ def two_population_posteriors(all_params, accepted_params, mode = "pulse", dimen
             plt.figure(3, figsize = (3,3))
             plt.bar(np.array([1,2])-0.25/2,prior_spikes, 0.25, label = "Prior")
             plt.bar(np.array([1,2])+0.25/2,post_spikes, 0.25, label = "Posterior", color = "orange")
-            plt.xticks(np.array([1,2]), np.array(["$\mu_b = 0$",  "$\mu_b \\neq 0$"]))
+            plt.xticks(np.array([1,2]), np.array(["$\mu_b^{chase} = 0$",  "$\mu_b^{chase} \\neq 0$"]))
             plt.ylabel("Probability")
             plt.legend()
             plt.tight_layout()
             #plt.savefig("two_pop_chase_spikes", dpi=300)
 
-def three_population_posteriors(all_params, accepted_params, mode = "pulse", dimensions = 1, MAP = False):
+def three_population_posteriors(all_params, accepted_params, previous_params = 0, mode = "pulse", dimensions = 1, MAP = False):
     if dimensions == 1:
         if mode == "pulse":
-            fig, ax = plt.subplots(2,6, figsize=(18,18/4))
+            fig, ax = plt.subplots(2,5, figsize=(18,5))
             ax[0,0].hist(np.transpose(all_params)[2], density = True, label = "prior", bins=50)
             ax[0,0].hist(np.transpose(accepted_params)[2], density = True, label = "posterior", bins=50, color = "orange")
             ax[0,0].set_title("$p$")
@@ -476,17 +488,17 @@ def three_population_posteriors(all_params, accepted_params, mode = "pulse", dim
             ax[0,2].hist(np.log10(np.transpose(accepted_params)[4]), density = True, label = "posterior", bins=50, color = "orange")
             ax[0,2].set_title("$log_{10}(\mu_b)$")
 
-            ax[0,3].hist(np.log10(np.transpose(all_params)[4]/np.transpose(all_params)[2]), density = True, label = "prior", bins=50)
-            ax[0,3].hist(np.log10(np.transpose(accepted_params)[4]/np.transpose(accepted_params)[2]), density = True, label = "posterior", bins=50, color = "orange")
-            ax[0,3].set_title("$log_{10}(\mu_a)$ ($\mu_a = \mu_b/p$)")
+            # ax[0,3].hist(np.log10(np.transpose(all_params)[4]/np.transpose(all_params)[2]), density = True, label = "prior", bins=50)
+            # ax[0,3].hist(np.log10(np.transpose(accepted_params)[4]/np.transpose(accepted_params)[2]), density = True, label = "posterior", bins=50, color = "orange")
+            # ax[0,3].set_title("$log_{10}(\mu_a)$ ($\mu_a = \mu_b/p$)")
 
-            ax[0,4].hist(1/(np.transpose(all_params)[5]), density = True, label = "prior", bins=50)
-            ax[0,4].hist(1/(np.transpose(accepted_params)[5]), density = True, label = "posterior", bins=50, color = "orange")
-            ax[0,4].set_title("$1/\mu_r$")
+            ax[0,3].hist(1/(np.transpose(all_params)[5]), density = True, label = "prior", bins=50)
+            ax[0,3].hist(1/(np.transpose(accepted_params)[5]), density = True, label = "posterior", bins=50, color = "orange")
+            ax[0,3].set_title("$1/\mu_r$")
 
-            ax[0,5].hist(np.log10(np.transpose(all_params)[6]), density = True, label = "Prior", bins=50)
-            ax[0,5].hist(np.log10(np.transpose(accepted_params)[6]), density = True, label = "Posterior", bins=50, color = "orange")
-            ax[0,5].set_title("$log_{10}(c)$")
+            ax[0,4].hist(np.log10(np.transpose(all_params)[6]), density = True, label = "Prior", bins=50)
+            ax[0,4].hist(np.log10(np.transpose(accepted_params)[6]), density = True, label = "Posterior", bins=50, color = "orange")
+            ax[0,4].set_title("$log_{10}(c)$")
 
             ax[1,0].hist(np.transpose(all_params)[0], density = True, label = "prior", bins=50)
             ax[1,0].hist(np.transpose(accepted_params)[0], density = True, label = "posterior", bins=50, color = "orange")
@@ -501,49 +513,63 @@ def three_population_posteriors(all_params, accepted_params, mode = "pulse", dim
             ax[1,2].hist(np.array([]), label = "Posterior", color = "orange")
             ax[1,2].legend(loc= "center")
             for j in range(2):
-                for i in range(6):
+                for i in range(5):
                     ax[j,i].set_yticks([],[])
 
-            for j in range(4):
+            for j in range(3):
                 ax[1,j+2].set_xticks([],[])
                 ax[1,j+2].spines['top'].set_visible(False)
                 ax[1,j+2].spines['right'].set_visible(False)
                 ax[1,j+2].spines['bottom'].set_visible(False)
                 ax[1,j+2].spines['left'].set_visible(False)
+            
+            plt.tight_layout()
 
 
         if mode == "chase":
-            fig, ax = plt.subplots(2,6, figsize=(18,18/4))
+            # - beta0 (float, beta0 >= 0)
+            # - beta1 (float, beta1 >= 0)
+            # - p (float, 0 <= p <= 1)
+            # - mu_d (float, mu_d >= 0)
+            # - mu_b (float, mu_b >= 0)
+            # - mu_r (float, mu_r >= 0)
+            # - c (float, c >= 0)
+            fig, ax = plt.subplots(2,5, figsize=(18,6))
 
+            ax[0,0].hist(np.transpose(previous_params)[2], density = True, color = "darkviolet")
             ax[0,0].hist(np.transpose(all_params)[3], density = True, label = "prior", bins=50)
             ax[0,0].hist(np.transpose(accepted_params)[3], density = True, label = "posterior", bins=50, color = "orange")
             ax[0,0].set_title("$p$")
             ax[0,0].set_ylabel("Density")
 
             #ax[0,1].hist(np.log10(np.transpose(all_params)[3]), density = True, label = "prior", bins=50, color = "green")
+            ax[0,1].hist(np.log10(np.transpose(previous_params)[3]), density = True, color = "darkviolet")
             ax[0,1].hist(np.log10(np.transpose(all_params)[4]), density = True, label = "prior", bins=50)
             ax[0,1].hist(np.log10(np.transpose(accepted_params)[4]), density = True, label = "posterior", bins=50, color = "orange")
             ax[0,1].set_title("$log_{10}(\mu_d)$")
 
             #ax[0,2].hist(np.log10(np.transpose(all_params)[4]), density = True, label = "prior", bins=50, color = "green")
+            ax[0,2].hist(np.log10(np.transpose(previous_params)[4]), density = True, color = "darkviolet")
             ax[0,2].hist(np.log10(np.transpose(all_params)[5]), density = True, label = "prior", bins=50)
             ax[0,2].hist(np.log10(np.transpose(accepted_params)[5]), density = True, label = "posterior", bins=50, color = "orange")
             ax[0,2].set_title("$log_{10}(\mu_b)$")
 
-            #ax[0,3].hist(np.log10(np.transpose(all_params)[4]/np.transpose(all_params)[2]), density = True, label = "prior", bins=50, color = "green")
-            ax[0,3].hist(np.log10(np.transpose(all_params)[5]/np.transpose(all_params)[3]), density = True, label = "posterior", bins=50)
-            ax[0,3].hist(np.log10(np.transpose(accepted_params)[5]/np.transpose(accepted_params)[3]), density = True, label = "posterior", bins=50, color = "orange")
-            ax[0,3].set_title("$log_{10}(\mu_a)$ ($\mu_a = \mu_b/p$)")
+            # #ax[0,3].hist(np.log10(np.transpose(all_params)[4]/np.transpose(all_params)[2]), density = True, label = "prior", bins=50, color = "green")
+            # ax[0,3].hist(np.log10(np.transpose(all_params)[5]/np.transpose(all_params)[3]), density = True, label = "posterior", bins=50)
+            # ax[0,3].hist(np.log10(np.transpose(accepted_params)[5]/np.transpose(accepted_params)[3]), density = True, label = "posterior", bins=50, color = "orange")
+            # ax[0,3].set_title("$log_{10}(\mu_a)$ ($\mu_a = \mu_b/p$)")
 
             #ax[0,4].hist(1/(np.transpose(all_params)[5]), density = True, label = "Pulse Prior", bins=50, color = "green")
-            ax[0,4].hist(1/(np.transpose(all_params)[6]), density = True, label = "Pulse Posterior/Chase Prior", bins=50)
-            ax[0,4].hist(1/(np.transpose(accepted_params)[6]), density = True, label = "Chase Posterior", bins=50, color = "orange")
-            ax[0,4].set_title("$1/\mu_r$")
+            ax[0,3].hist(1/(np.transpose(previous_params)[5]), density = True, color = "darkviolet")
+            ax[0,3].hist(1/(np.transpose(all_params)[6]), density = True, label = "Pulse Posterior/Chase Prior", bins=50)
+            ax[0,3].hist(1/(np.transpose(accepted_params)[6]), density = True, label = "Chase Posterior", bins=50, color = "orange")
+            ax[0,3].set_title("$1/\mu_r$")
 
             #ax[0,5].hist(np.log10(np.transpose(all_params)[6]), density = True, label = "Pulse Fitting Prior", bins=50, color = "green")
-            ax[0,5].hist(np.log10(np.transpose(all_params)[11]), density = True, label = "Prior", bins=50)
-            ax[0,5].hist(np.log10(np.transpose(accepted_params)[11]), density = True, label = "Posterior", bins=50, color = "orange")
-            ax[0,5].set_title("$log_{10}(c)$")
+            ax[0,4].hist(np.log10(np.transpose(previous_params)[6]), density = True, color = "darkviolet")
+            ax[0,4].hist(np.log10(np.transpose(all_params)[11]), density = True, label = "Prior", bins=50)
+            ax[0,4].hist(np.log10(np.transpose(accepted_params)[11]), density = True, label = "Posterior", bins=50, color = "orange")
+            ax[0,4].set_title("$log_{10}(c)$")
 
             all_adjusted_mu_bs = np.transpose(all_params)[7].copy()
             all_adjusted_mu_bs[all_adjusted_mu_bs == 0] = 10e-8
@@ -581,18 +607,13 @@ def three_population_posteriors(all_params, accepted_params, mode = "pulse", dim
             ax[1,4].spines['bottom'].set_visible(False)
             ax[1,4].spines['left'].set_visible(False)
 
-            ax[1,5].set_xticks([],[])
-            ax[1,5].set_yticks([],[])
-            ax[1,5].spines['top'].set_visible(False)
-            ax[1,5].spines['right'].set_visible(False)
-            ax[1,5].spines['bottom'].set_visible(False)
-            ax[1,5].spines['left'].set_visible(False)
             for j in range(2):
-                for i in range(6):
+                for i in range(5):
                     ax[j,i].set_yticks([],[])
 
             ax[1,4].hist(np.array([]), label = "Prior")
             ax[1,4].hist(np.array([]), label = "Posterior", color = "orange")
+            ax[1,4].hist(np.array([]), label = "Original pulse data prior", color = "darkviolet")
             ax[1,4].legend(loc="center")
             plt.tight_layout()
 
@@ -636,7 +657,7 @@ def three_population_posteriors(all_params, accepted_params, mode = "pulse", dim
             ax[0,3].set_title('$1/\mu_r$')
             ax[4,0].set_ylabel('$log_{10}(c)$')
             ax[0,4].set_title('$log_{10}(c)$')
-            plt.tight_layout()       
+            plt.tight_layout()
             #plt.savefig("three_pop_pulse_2d", dpi=300)
 
             fig2, ax2 = plt.subplots(2,7, figsize=(18,4.5))
@@ -679,7 +700,7 @@ def three_population_posteriors(all_params, accepted_params, mode = "pulse", dim
         #beta0, beta1, sig, diffusion_prob_pulse_pert, mu_d_pulse_pert, mu_b_pulse_pert, true_birth_pert, mu_b_chase, diffusion_prob_pulse_pert, mu_d_pulse_pert, mu_a_chase, c_pert
         if mode == "chase":
             
-            fig, ax = plt.subplots(7,7, figsize=(18,12))
+            fig, ax = plt.subplots(7,7, figsize=(18,13))
 
             #beta0, beta1, p, mu_d, mu_b, mu_r, c
             funcs = [lambda x: x, np.log10, np.log10, lambda x: 1/x, extended_log10, extended_log10, np.log10]
@@ -783,10 +804,10 @@ def three_population_posteriors(all_params, accepted_params, mode = "pulse", dim
             none_zero_post = len(accepted_params) - both_zero_post - one_zero_post
             post_spikes = np.array([both_zero_post, one_zero_post, none_zero_post])/len(accepted_params)
 
-            plt.figure(3, figsize = (3,3))
+            plt.figure(3, figsize = (4.5,4.5))
             plt.bar(np.array([1,2,3])-0.25/2,prior_spikes, 0.25, label = "Prior")
             plt.bar(np.array([1,2,3])+0.25/2,post_spikes, 0.25, label = "Posterior", color = "orange")
-            plt.xticks(np.array([1,2,3]), np.array(["$\mu_b = 0$,\n $\mu_a = 0$", "$\mu_b = 0$, \n $\mu_a \\neq 0$", "$\mu_b \\neq 0$, \n $\mu_a \\neq 0$"]))
+            plt.xticks(np.array([1,2,3]), np.array(["$\mu_b^{chase} = 0$,\n $\mu_a^{chase} = 0$", "$\mu_b^{chase} = 0$, \n $\mu_a^{chase} \\neq 0$", "$\mu_b^{chase} \\neq 0$, \n $\mu_a^{chase} \\neq 0$"]))
             plt.ylabel("Probability")
             plt.legend()
             plt.tight_layout()
@@ -1264,7 +1285,6 @@ def dispersed_three_population_posteriors(all_params, accepted_params, mode = "p
         plt.tight_layout()
         #plt.savefig("three_pop_pulse_betas_2d", dpi=300)
 
-       
 def ou_three_population_posteriors(all_params, accepted_params, mode = "pulse", dimensions = 1, MAP = False):
     if dimensions == 1:
 
@@ -1414,6 +1434,338 @@ def ou_three_population_posteriors(all_params, accepted_params, mode = "pulse", 
         #plt.savefig("three_pop_pulse_betas_2d", dpi=300)
 
   
+def three_population_posteriors_comparison(all_params, accepted_params, mode = "pulse", dimensions = 1, MAP = False):
+    if dimensions == 1:
+        if mode == "pulse":
+            fig, ax = plt.subplots(2,6, figsize=(18,18/4))
+            ax[0,0].hist(np.transpose(all_params)[2], density = True, label = "prior", bins=50)
+            ax[0,0].hist(np.transpose(accepted_params)[2], density = True, label = "posterior", bins=50, color = "orange")
+            ax[0,0].set_title("$p$")
+            ax[0,0].set_ylabel("Density")
+
+            ax[0,1].hist(np.log10(np.transpose(all_params)[3]), density = True, label = "prior", bins=50)
+            ax[0,1].hist(np.log10(np.transpose(accepted_params)[3]), density = True, label = "posterior", bins=50, color = "orange")
+            ax[0,1].set_title("$log_{10}(\mu_d)$")
+
+            ax[0,2].hist(np.log10(np.transpose(all_params)[4]), density = True, label = "prior", bins=50)
+            ax[0,2].hist(np.log10(np.transpose(accepted_params)[4]), density = True, label = "posterior", bins=50, color = "orange")
+            ax[0,2].set_title("$log_{10}(\mu_b)$")
+
+            ax[0,3].hist(np.log10(np.transpose(all_params)[4]/np.transpose(all_params)[2]), density = True, label = "prior", bins=50)
+            ax[0,3].hist(np.log10(np.transpose(accepted_params)[4]/np.transpose(accepted_params)[2]), density = True, label = "posterior", bins=50, color = "orange")
+            ax[0,3].set_title("$log_{10}(\mu_a)$ ($\mu_a = \mu_b/p$)")
+
+            ax[0,4].hist(1/(np.transpose(all_params)[5]), density = True, label = "prior", bins=50)
+            ax[0,4].hist(1/(np.transpose(accepted_params)[5]), density = True, label = "posterior", bins=50, color = "orange")
+            ax[0,4].set_title("$1/\mu_r$")
+
+            ax[0,5].hist(np.log10(np.transpose(all_params)[6]), density = True, label = "Prior", bins=50)
+            ax[0,5].hist(np.log10(np.transpose(accepted_params)[6]), density = True, label = "Posterior", bins=50, color = "orange")
+            ax[0,5].set_title("$log_{10}(c)$")
+
+            ax[1,0].hist(np.transpose(all_params)[0], density = True, label = "prior", bins=50)
+            ax[1,0].hist(np.transpose(accepted_params)[0], density = True, label = "posterior", bins=50, color = "orange")
+            ax[1,0].set_title('$\\beta_0$')
+            ax[1,0].set_ylabel("Density")
+
+            ax[1,1].hist(np.transpose(all_params)[1], density = True, label = "Prior", bins=50)
+            ax[1,1].hist(np.transpose(accepted_params)[1], density = True, label = "Posterior", bins=50, color = "orange")
+            ax[1,1].set_title('$\\beta_1$')
+
+            ax[1,2].hist(np.array([]), label = "Logarithmic birth")
+            ax[1,2].hist(np.array([]), label = "Dispersed logarithmic birth", color = "orange")
+            ax[1,2].legend(loc= "center")
+            for j in range(2):
+                for i in range(6):
+                    ax[j,i].set_yticks([],[])
+
+            for j in range(4):
+                ax[1,j+2].set_xticks([],[])
+                ax[1,j+2].spines['top'].set_visible(False)
+                ax[1,j+2].spines['right'].set_visible(False)
+                ax[1,j+2].spines['bottom'].set_visible(False)
+                ax[1,j+2].spines['left'].set_visible(False)
+
+
+        if mode == "chase":
+            fig, ax = plt.subplots(2,6, figsize=(18,18/4))
+
+            ax[0,0].hist(np.transpose(all_params)[3], density = True, label = "prior", bins=50)
+            ax[0,0].hist(np.transpose(accepted_params)[3], density = True, label = "posterior", bins=50, color = "orange")
+            ax[0,0].set_title("$p$")
+            ax[0,0].set_ylabel("Density")
+
+            #ax[0,1].hist(np.log10(np.transpose(all_params)[3]), density = True, label = "prior", bins=50, color = "green")
+            ax[0,1].hist(np.log10(np.transpose(all_params)[4]), density = True, label = "prior", bins=50)
+            ax[0,1].hist(np.log10(np.transpose(accepted_params)[4]), density = True, label = "posterior", bins=50, color = "orange")
+            ax[0,1].set_title("$log_{10}(\mu_d)$")
+
+            #ax[0,2].hist(np.log10(np.transpose(all_params)[4]), density = True, label = "prior", bins=50, color = "green")
+            ax[0,2].hist(np.log10(np.transpose(all_params)[5]), density = True, label = "prior", bins=50)
+            ax[0,2].hist(np.log10(np.transpose(accepted_params)[5]), density = True, label = "posterior", bins=50, color = "orange")
+            ax[0,2].set_title("$log_{10}(\mu_b)$")
+
+            #ax[0,3].hist(np.log10(np.transpose(all_params)[4]/np.transpose(all_params)[2]), density = True, label = "prior", bins=50, color = "green")
+            ax[0,3].hist(np.log10(np.transpose(all_params)[5]/np.transpose(all_params)[3]), density = True, label = "posterior", bins=50)
+            ax[0,3].hist(np.log10(np.transpose(accepted_params)[5]/np.transpose(accepted_params)[3]), density = True, label = "posterior", bins=50, color = "orange")
+            ax[0,3].set_title("$log_{10}(\mu_a)$ ($\mu_a = \mu_b/p$)")
+
+            #ax[0,4].hist(1/(np.transpose(all_params)[5]), density = True, label = "Pulse Prior", bins=50, color = "green")
+            ax[0,4].hist(1/(np.transpose(all_params)[6]), density = True, label = "Pulse Posterior/Chase Prior", bins=50)
+            ax[0,4].hist(1/(np.transpose(accepted_params)[6]), density = True, label = "Chase Posterior", bins=50, color = "orange")
+            ax[0,4].set_title("$1/\mu_r$")
+
+            #ax[0,5].hist(np.log10(np.transpose(all_params)[6]), density = True, label = "Pulse Fitting Prior", bins=50, color = "green")
+            ax[0,5].hist(np.log10(np.transpose(all_params)[11]), density = True, label = "Prior", bins=50)
+            ax[0,5].hist(np.log10(np.transpose(accepted_params)[11]), density = True, label = "Posterior", bins=50, color = "orange")
+            ax[0,5].set_title("$log_{10}(c)$")
+
+            all_adjusted_mu_bs = np.transpose(all_params)[7].copy()
+            all_adjusted_mu_bs[all_adjusted_mu_bs == 0] = 10e-8
+            accepted_adjusted_mu_bs = np.transpose(accepted_params)[7].copy()
+            accepted_adjusted_mu_bs[accepted_adjusted_mu_bs == 0] = 10e-8
+
+            ax[1,2].hist(np.log10(all_adjusted_mu_bs), density = True, label = "prior", bins=50)
+            ax[1,2].hist(np.log10(accepted_adjusted_mu_bs), density = True, label = "posterior", bins=50, color = "orange")
+            ax[1,2].set_title("$log_{10}(\mu_b^{chase})$")
+            _ = ax[1,2].set_xticks([-7,-6,-5,-4,-3,-2], ["$-\infty$", -6,-5,-4,-3,-2])
+
+            all_adjusted_mu_as = np.transpose(all_params)[10].copy()
+            all_adjusted_mu_as[all_adjusted_mu_as == 0] = 10e-8
+            accepted_adjusted_mu_as = np.transpose(accepted_params)[10].copy()
+            accepted_adjusted_mu_as[accepted_adjusted_mu_as == 0] = 10e-8
+
+            ax[1,3].hist(np.log10(all_adjusted_mu_as), density = True, label = "prior", bins=50)
+            ax[1,3].hist(np.log10(accepted_adjusted_mu_as), density = True, label = "posterior", bins=50, color = "orange")
+            ax[1,3].set_title("$log_{10}(\mu_a^{chase})$")
+            _ = ax[1,3].set_xticks([-7,-5,-2.5,0], ["$-\infty$", -5,-2.5,0])
+
+            ax[1,0].hist(np.transpose(all_params)[0], density = True, label = "prior", bins=50)
+            ax[1,0].hist(np.transpose(accepted_params)[0], density = True, label = "posterior", bins=50, color = "orange")
+            ax[1,0].set_title('$\\beta_0$')
+            ax[1,0].set_ylabel("Density")
+
+            ax[1,1].hist(np.transpose(all_params)[1], density = True, label = "prior", bins=50)
+            ax[1,1].hist(np.transpose(accepted_params)[1], density = True, label = "posterior", bins=50, color = "orange")
+            ax[1,1].set_title('$\\beta_1$')
+
+            ax[1,4].set_xticks([],[])
+            ax[1,4].set_yticks([],[])
+            ax[1,4].spines['top'].set_visible(False)
+            ax[1,4].spines['right'].set_visible(False)
+            ax[1,4].spines['bottom'].set_visible(False)
+            ax[1,4].spines['left'].set_visible(False)
+
+            ax[1,5].set_xticks([],[])
+            ax[1,5].set_yticks([],[])
+            ax[1,5].spines['top'].set_visible(False)
+            ax[1,5].spines['right'].set_visible(False)
+            ax[1,5].spines['bottom'].set_visible(False)
+            ax[1,5].spines['left'].set_visible(False)
+            for j in range(2):
+                for i in range(6):
+                    ax[j,i].set_yticks([],[])
+
+            ax[1,4].hist(np.array([]), label = "Logarithmic birth")
+            ax[1,4].hist(np.array([]), label = "Dispersed logarithmic birth", color = "orange")
+            ax[1,4].legend(loc="center")
+
+    if dimensions == 2:
+        if mode == "pulse":
+            fig, ax = plt.subplots(5,5, figsize=(18,12))
+            #beta0, beta1, p, mu_d, mu_b, mu_r, c
+            funcs = [lambda x: x, lambda x: x, lambda x: x, np.log10, np.log10, lambda x: 1/x, np.log10]
+            for i in range(5):
+                for j in range(5):
+
+                    if i == j:
+                        ax[j,i].spines['top'].set_visible(False)
+                        ax[j,i].spines['right'].set_visible(False)
+                        ax[j,i].spines['bottom'].set_visible(False)
+                        ax[j,i].spines['left'].set_visible(False)
+                    else:
+
+                        a = ax[j][i].scatter(funcs[i+2](np.transpose(all_params)[i+2][:1000]), funcs[j+2](np.transpose(all_params)[j+2][:1000]), label = "Prior")
+                        b = ax[j][i].scatter(funcs[i+2](np.transpose(accepted_params)[i+2]), funcs[j+2](np.transpose(accepted_params)[j+2]), color = "orange", label = "Posterior")
+                        if type(MAP) != bool:
+                            ax[j,i].scatter(funcs[i+2](MAP[i+2]), funcs[j+2](MAP[j+2]), color = "black", marker="x")
+
+                    if (i != 0 and j !=0) or (i!=1 and j ==0):
+                        ax[j,i].set_yticks([],[])
+
+                    if (j !=4 and i !=4) or (j!=3 and i ==4):
+                        ax[j,i].set_xticks([],[])
+        
+            ax[2,2].scatter(np.array([]), np.array([]),label = "Logarithmic birth")
+            ax[2,2].scatter(np.array([]), np.array([]),label = "Dispersed logarithmic birth", color = "orange")
+            ax[2,2].legend(loc="center")
+
+            ax[0,1].set_ylabel('p')
+            ax[1,0].set_title('p')
+            ax[1,0].set_ylabel('$log_{10}(\mu_d)$')
+            ax[0,1].set_title('$log_{10}(\mu_d)$')
+            ax[2,0].set_ylabel('$log_{10}(\mu_b)$')
+            ax[0,2].set_title('$log_{10}(\mu_b)$')
+            ax[3,0].set_ylabel('$1/\mu_r$')
+            ax[0,3].set_title('$1/\mu_r$')
+            ax[4,0].set_ylabel('$log_{10}(c)$')
+            ax[0,4].set_title('$log_{10}(c)$')
+            plt.tight_layout()
+            #plt.savefig("dispersed_three_pop_pulse_2d", dpi=300)
+
+            fig2, ax2 = plt.subplots(2,7, figsize=(18,4.5))
+            #beta0, beta1, p, mu_d, mu_b, mu_r, c
+            funcs = [lambda x: x, lambda x: x, lambda x: x, np.log10, np.log10, lambda x: 1/x, np.log10]
+            for i in range(7):
+                for j in range(2):
+
+                    if i == j:
+                        ax2[j,i].spines['top'].set_visible(False)
+                        ax2[j,i].spines['right'].set_visible(False)
+                        ax2[j,i].spines['bottom'].set_visible(False)
+                        ax2[j,i].spines['left'].set_visible(False)
+                    else:
+                        ax2[j][i].scatter(funcs[i](np.transpose(all_params)[i][:1000]), funcs[j](np.transpose(all_params)[j][:1000]), label = "Prior")
+                        ax2[j][i].scatter(funcs[i](np.transpose(accepted_params)[i]), funcs[j](np.transpose(accepted_params)[j]), color="orange", label="Posterior")
+                
+                    if (i != 0 and j !=0) or (i!=1 and j ==0):
+                        ax2[j,i].set_yticks([],[])
+
+                    if (j !=1 and i !=1) or (j==1 and i ==1):
+                        ax2[j,i].set_xticks([],[])
+            
+            ax2[1,1].scatter(np.array([]), np.array([]),label = "Logarithmic birth")
+            ax2[1,1].scatter(np.array([]), np.array([]),label = "Dispersed logarithmic birth", color = "orange")
+            ax2[1,1].legend(loc="center")
+
+            ax2[0,1].set_ylabel('$\\beta_0$')
+            ax2[1,0].set_title('$\\beta_0$')
+            ax2[1,0].set_ylabel('$\\beta_1$')
+            ax2[0,1].set_title('$\\beta_1$')
+            ax2[0,2].set_title('p')
+            ax2[0,3].set_title('$log_{10}(\mu_d)$')
+            ax2[0,4].set_title('$log_{10}(\mu_b)$')
+            ax2[0,5].set_title('$1/\mu_r$')
+            ax2[0,6].set_title('$log_{10}(c)$')
+            plt.tight_layout()
+            #plt.savefig("dispersed_three_pop_pulse_betas_2d", dpi=300)
+
+        #beta0, beta1, sig, diffusion_prob_pulse_pert, mu_d_pulse_pert, mu_b_pulse_pert, true_birth_pert, mu_b_chase, diffusion_prob_pulse_pert, mu_d_pulse_pert, mu_a_chase, c_pert
+        if mode == "chase":
+            
+            fig, ax = plt.subplots(7,7, figsize=(18,12))
+
+            #beta0, beta1, p, mu_d, mu_b, mu_r, c
+            funcs = [lambda x: x, np.log10, np.log10, lambda x: 1/x, extended_log10, extended_log10, np.log10]
+            indexes = [3,4,5,6,7,10,11]
+            for i in range(7):
+                for j in range(7):
+
+                    if i == j:
+                        ax[j,i].spines['top'].set_visible(False)
+                        ax[j,i].spines['right'].set_visible(False)
+                        ax[j,i].spines['bottom'].set_visible(False)
+                        ax[j,i].spines['left'].set_visible(False)
+                    else:
+
+                        ax[j][i].scatter(funcs[i](np.transpose(all_params)[indexes[i]][:1000]), funcs[j](np.transpose(all_params)[indexes[j]][:1000]), label = "Prior")
+                        ax[j][i].scatter(funcs[i](np.transpose(accepted_params)[indexes[i]]), funcs[j](np.transpose(accepted_params)[indexes[j]]), color = "orange", label = "Posterior")
+
+                    if (i != 0 and j !=0) or (i!=1 and j ==0):
+                        ax[j,i].set_yticks([],[])
+
+                    if (j !=6 and i !=6) or (j!=5 and i ==6):
+                        ax[j,i].set_xticks([],[])
+
+            ax[3,3].scatter(np.array([]), np.array([]),label = "Prior")
+            ax[3,3].scatter(np.array([]), np.array([]),label = "Posterior", color = "orange")
+            ax[3,3].legend(loc="center")
+                
+            ax[0,1].set_ylabel('p')
+            ax[1,0].set_title('p')
+            ax[1,0].set_ylabel('$log_{10}(\mu_d)$')
+            ax[0,1].set_title('$log_{10}(\mu_d)$')
+            ax[2,0].set_ylabel('$log_{10}(\mu_b)$')
+            ax[0,2].set_title('$log_{10}(\mu_b)$')
+            ax[3,0].set_ylabel('$1/\mu_r$')
+            ax[0,3].set_title('$1/\mu_r$')
+            ax[4,0].set_ylabel('$log_{10}(\mu_b^{chase})$')
+            ax[0,4].set_title('$log_{10}(\mu_b^{chase})$')
+            ax[5,0].set_ylabel('$log_{10}(\mu_a^{chase})$')
+            ax[0,5].set_title('$log_{10}(\mu_a^{chase})$')
+            ax[6,0].set_ylabel('$log_{10}(c)$')
+            ax[0,6].set_title('$log_{10}(c)$')
+
+            _ = ax[4,0].set_yticks([-8,-6,-4,-2], ["$-\infty$", -6,-4,-2])
+            _ = ax[6,4].set_xticks([-8,-6,-4,-2], ["$-\infty$", -6,-4,-2])
+            _ = ax[5,0].set_yticks([-8,-6,-4,-2,0], ["$-\infty$", -6,-4,-2,0])
+            _ = ax[6,5].set_xticks([-8,-6,-4,-2,0], ["$-\infty$", -6,-4,-2,0])
+
+            plt.tight_layout()
+            #plt.savefig("three_pop_chase_2d", dpi=300)
+
+            fig2, ax2 = plt.subplots(2,9, figsize=(18,4.5))
+            funcs = [lambda x: x, lambda x: x, lambda x: x, np.log10, np.log10, lambda x: 1/x, extended_log10, extended_log10, np.log10]
+            indexes = [0,1,3,4,5,6,7,10,11]
+            for i in range(9):
+                for j in range(2):
+
+                    if i == j:
+                        ax2[j,i].spines['top'].set_visible(False)
+                        ax2[j,i].spines['right'].set_visible(False)
+                        ax2[j,i].spines['bottom'].set_visible(False)
+                        ax2[j,i].spines['left'].set_visible(False)
+                    
+                    else:
+
+                        ax2[j][i].scatter(funcs[i](np.transpose(all_params)[indexes[i]][:1000]), funcs[j](np.transpose(all_params)[indexes[j]][:1000]), label = "Prior")
+                        ax2[j][i].scatter(funcs[i](np.transpose(accepted_params)[indexes[i]]), funcs[j](np.transpose(accepted_params)[indexes[j]]), color = "orange", label = "Posterior")
+                
+                    if (i != 0 and j !=0) or (i!=1 and j ==0):
+                        ax2[j,i].set_yticks([],[])
+
+                    if (j !=1 and i !=1) or (j==1 and i ==1):
+                        ax2[j,i].set_xticks([],[])
+                        
+            ax2[1,1].scatter(np.array([]), np.array([]),label = "Prior")
+            ax2[1,1].scatter(np.array([]), np.array([]),label = "Posterior", color = "orange")
+            ax2[1,1].legend(loc="center")
+            ax2[0,1].set_ylabel('$\\beta_0$')
+            ax2[1,0].set_title('$\\beta_0$')
+            ax2[1,0].set_ylabel('$\\beta_1$')
+            ax2[0,1].set_title('$\\beta_1$')
+            ax2[0,2].set_title('p')
+            ax2[0,3].set_title('$log_{10}(\mu_d)$')
+            ax2[0,4].set_title('$log_{10}(\mu_b)$')
+            ax2[0,5].set_title('$1/\mu_r$')
+            ax2[0,6].set_title('$log_{10}(\mu_b^{chase})$')
+            ax2[0,7].set_title('$log_{10}(\mu_a^{chase})$')
+            ax2[0,8].set_title('$log_{10}(c)$')
+
+            _ = ax2[1,6].set_xticks([-8,-6,-4,-2], ["$-\infty$", -6,-4,-2])
+            _ = ax2[1,7].set_xticks([-8,-4,0], ["$-\infty$", -4,0])
+            plt.tight_layout()
+            #plt.savefig("three_pop_chase_betas_2d", dpi=300)
+
+            both_zero_prior = np.sum(np.transpose(all_params)[indexes[-2]]==0)
+            one_zero_prior = np.sum(np.transpose(all_params)[indexes[-3]] == 0) - both_zero_prior
+            none_zero_prior = len(all_params) - both_zero_prior - one_zero_prior
+            prior_spikes = np.array([both_zero_prior, one_zero_prior, none_zero_prior])/len(all_params)
+
+            both_zero_post = np.sum(np.transpose(accepted_params)[indexes[-2]]==0)
+            one_zero_post = np.sum(np.transpose(accepted_params)[indexes[-3]] == 0) - both_zero_post
+            none_zero_post = len(accepted_params) - both_zero_post - one_zero_post
+            post_spikes = np.array([both_zero_post, one_zero_post, none_zero_post])/len(accepted_params)
+
+            plt.figure(3, figsize = (3,3))
+            plt.bar(np.array([1,2,3])-0.25/2,prior_spikes, 0.25, label = "Prior")
+            plt.bar(np.array([1,2,3])+0.25/2,post_spikes, 0.25, label = "Posterior", color = "orange")
+            plt.xticks(np.array([1,2,3]), np.array(["$\mu_b = 0$,\n $\mu_a = 0$", "$\mu_b = 0$, \n $\mu_a \\neq 0$", "$\mu_b \\neq 0$, \n $\mu_a \\neq 0$"]))
+            plt.ylabel("Probability")
+            plt.legend()
+            plt.tight_layout()
+
+
 dirname = os.path.dirname(__file__)
 def plot_posteriors(model = "three population", mode = "chase", dimensions = 2):
     """
@@ -1430,33 +1782,39 @@ def plot_posteriors(model = "three population", mode = "chase", dimensions = 2):
         if mode == "pulse":
             all_params = np.load(os.path.join(dirname, "simulated_ABC_data/three_population_model/three_population_pulse_params.npy"))
             accepted_params = np.load(os.path.join(dirname, "simulated_ABC_data/three_population_model/three_population_pulse_accepted_params.npy"))
+            previous_params = 0
         elif mode == "chase":
             all_params = np.load(os.path.join(dirname, "simulated_ABC_data/three_population_model/three_population_chase_params.npy"))
             accepted_params = np.load(os.path.join(dirname, "simulated_ABC_data/three_population_model/three_population_chase_accepted_params.npy"))
-        three_population_posteriors(all_params, accepted_params, mode = mode, dimensions = dimensions)
+            previous_params = np.load(os.path.join(dirname, "simulated_ABC_data/three_population_model/three_population_pulse_params.npy"))
+        three_population_posteriors(all_params, accepted_params, previous_params, mode = mode, dimensions = dimensions)
 
     elif model == "two population":
         if mode == "pulse":
             all_params = np.load(os.path.join(dirname, "simulated_ABC_data/two_population_model/two_population_pulse_params.npy"))
             accepted_params = np.load(os.path.join(dirname, "simulated_ABC_data/two_population_model/two_population_pulse_accepted_params.npy"))
+            previous_params = 0
 
         elif mode == "chase":
             all_params = np.load(os.path.join(dirname, "simulated_ABC_data/two_population_model/two_population_chase_params.npy"))
             accepted_params = np.load(os.path.join(dirname, "simulated_ABC_data/two_population_model/two_population_chase_accepted_params.npy"))
+            previous_params = np.load(os.path.join(dirname, "simulated_ABC_data/two_population_model/two_population_pulse_params.npy"))
 
-        two_population_posteriors(all_params, accepted_params, mode = mode, dimensions = dimensions, p = False, prel = False)
+        two_population_posteriors(all_params, accepted_params, previous_params, mode = mode, dimensions = dimensions, p = False, prel = False)
 
     elif model == "preliminary two population":
         if mode == "pulse":
             all_params = np.load(os.path.join(dirname, "simulated_ABC_data/two_population_model/preliminary/preliminary_two_population_pulse_params.npy"))
             accepted_params = np.load(os.path.join(dirname, "simulated_ABC_data/two_population_model/preliminary/preliminary_two_population_pulse_accepted_params.npy"))
-            two_population_posteriors(all_params, accepted_params, mode = mode, dimensions = dimensions, p = False, prel = True)
+            previous_params = 0
+            two_population_posteriors(all_params, accepted_params, previous_params, mode = mode, dimensions = dimensions, p = False, prel = True)
 
     elif model == "variable p two population":
         if mode == "chase":
             all_params = np.load(os.path.join(dirname, "simulated_ABC_data/two_population_model/variable_p/two_population_chase_variablep_params.npy"))
             accepted_params = np.load(os.path.join(dirname, "simulated_ABC_data/two_population_model/variable_p/two_population_chase_variablep_accepted_params.npy"))
-            two_population_posteriors(all_params, accepted_params, mode = mode, dimensions = dimensions, p = True, prel = False)
+            previous_params = np.load(os.path.join(dirname, "simulated_ABC_data/two_population_model/two_population_pulse_params.npy"))
+            two_population_posteriors(all_params, accepted_params, previous_params, mode = mode, dimensions = dimensions, p = True, prel = False)
 
     elif model == "one population":
         if mode == "pulse":
@@ -1477,7 +1835,7 @@ def plot_posteriors(model = "three population", mode = "chase", dimensions = 2):
             dispersed_three_population_posteriors(all_params, accepted_params, dimensions = dimensions)          
 
 
-def plot_posteriors_manual(all_params, accepted_params , model = "three population", mode = "chase", dimensions = 2):
+def plot_posteriors_manual(all_params, accepted_params, model = "three population", mode = "chase", dimensions = 2):
     """
     model: "three population", "two population", "one population"
     mode: "pulse" or "chase"
@@ -1489,16 +1847,20 @@ def plot_posteriors_manual(all_params, accepted_params , model = "three populati
     """
 
     if model == "three population":
-        three_population_posteriors(all_params, accepted_params, mode = mode, dimensions = dimensions)
+        previous_params = np.load(os.path.join(dirname, "simulated_ABC_data/three_population_model/three_population_pulse_params.npy"))
+        three_population_posteriors(all_params, accepted_params, previous_params, mode = mode, dimensions = dimensions)
 
     elif model == "two population":
-        two_population_posteriors(all_params, accepted_params, mode = mode, dimensions = dimensions, p = False, prel = False)
+        previous_params = np.load(os.path.join(dirname, "simulated_ABC_data/two_population_model/two_population_pulse_params.npy"))
+        two_population_posteriors(all_params, accepted_params, previous_params, mode = mode, dimensions = dimensions, p = False, prel = False)
 
     elif model == "preliminary two population":
-        two_population_posteriors(all_params, accepted_params, mode = mode, dimensions = dimensions, p = False, prel = True)
+        previous_params = 0
+        two_population_posteriors(all_params, accepted_params, previous_params, mode = mode, dimensions = dimensions, p = False, prel = True)
 
     elif model == "variable p two population":
-        two_population_posteriors(all_params, accepted_params, mode = mode, dimensions = dimensions, p = True, prel = False)
+        previous_params = np.load(os.path.join(dirname, "simulated_ABC_data/two_population_model/two_population_pulse_params.npy"))
+        two_population_posteriors(all_params, accepted_params, previous_params, mode = mode, dimensions = dimensions, p = True, prel = False)
 
     elif model == "one population":
         one_population_posteriors(all_params, accepted_params, dimensions = dimensions)
@@ -1805,7 +2167,6 @@ def pulse_posterior_predictive_trajectories_poster():
 
     plt.legend(handles=legend_elements)
     plt.errorbar(pulse_times, edu_means, edu_err,  color='black', marker='o', ls = 'none', ecolor = 'black', label = "Edu Number Data Mean + 95% Confidence Interval")
-
 
 def chase_trajectory_comparison1():
 
